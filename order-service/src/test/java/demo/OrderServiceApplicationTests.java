@@ -7,7 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 class OrderServiceApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void applicationContextLoaded() {
+	}
+
+	@Test
+	void applicationContextTest() {
+	    OrderServiceApplication.main(new String[] {});
 	}
 
 }

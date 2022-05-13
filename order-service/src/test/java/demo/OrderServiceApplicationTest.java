@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 class OrderServiceApplicationTest {
 
 	@Test
-	void test() {
-		assertTrue(true);
+	void applicationContextTest() {
+	    OrderServiceApplication.main(new String[] {});
 	}
 
 }
