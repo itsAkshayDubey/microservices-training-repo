@@ -35,23 +35,23 @@ public class Product {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private int product_id;
-	private String product_name;
+	private int productId;
+	private String productName;
 	private String rating;
 	private String description;
 	private float price;
 	private boolean active;
-	public int getProduct_id() {
-		return product_id;
+	public int getProductId() {
+		return productId;
 	}
-	public void setProduct_id(int product_id) {
-		this.product_id = product_id;
+	public void setProductId(int product_id) {
+		this.productId = product_id;
 	}
-	public String getProduct_name() {
-		return product_name;
+	public String getProductName() {
+		return productName;
 	}
-	public void setProduct_name(String product_name) {
-		this.product_name = product_name;
+	public void setProductName(String product_name) {
+		this.productName = product_name;
 	}
 	public String getRating() {
 		return rating;

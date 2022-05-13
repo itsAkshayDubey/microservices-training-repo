@@ -2,7 +2,10 @@ package demo.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +23,10 @@ import demo.response.OrderFindAllResponse;
 import demo.util.OrderIdGenerator;
 
 @Service
-public class OrderService 
-{
+public class OrderService {
+	
+	private static Logger logger = LoggerFactory.getLogger(OrderService.class); 
+	
 	@Autowired
 	private OrderRepository repository;
 	
@@ -38,7 +43,7 @@ public class OrderService
 	{
 		Order order = request.getOrder();
 		Product product = productRepository.findById(order.getProductId());
-		order.setName(product.getProduct_name());
+		order.setName(product.getProductName());
 		order.setPrice(product.getPrice());
 		order.setStoreId(product.getStore().getStoreId());
 		order.setOrderDate(new Date());
@@ -53,19 +58,25 @@ public class OrderService
 
 		Payment paymentResponse = template.postForObject("http://PAYMENT-SERVICE/payment/doPayment",payment,Payment.class);
 
-		response = paymentResponse.getPaymentStatus().equals("success")?"payment processing successful":"there is a failure";
-
-		if(paymentResponse.getPaymentStatus().equals("success"))
-			order.setStatus("PLACED");
+		Optional<Payment> paymentOptional = Optional.ofNullable(paymentResponse);
+		
+		if(paymentOptional.isPresent()) {
+			if(paymentOptional.get().getPaymentStatus().equals("success"))
+				order.setStatus("PLACED");
+			else
+				order.setStatus("On-HOLD");
+		}
 		else
-			order.setStatus("On-HOLD");
-
+			logger.error("Got null response from payment service");
 
 		repository.save(order);
 		
 		TransactionResponse transactionResponse = new TransactionResponse();
 		transactionResponse.setOrder(order);
-		transactionResponse.setTransactionId(paymentResponse.getTransactionId());
+		if(paymentOptional.isPresent())
+			transactionResponse.setTransactionId(paymentOptional.get().getTransactionId());
+		else
+			logger.error("Got null response from payment service");
 		transactionResponse.setAmount(payment.getAmount());
 		transactionResponse.setMessage(response);
 		return transactionResponse;	
@@ -97,7 +108,7 @@ public class OrderService
 
 		OrderFindAllResponse response = new OrderFindAllResponse();
 
-		if(list.size() == 0)
+		if(list.isEmpty())
 			response.setMessage("No result found!");
 		else {
 			response.setList(list);
@@ -119,7 +130,7 @@ public class OrderService
 
 		OrderFindAllResponse response = new OrderFindAllResponse();
 
-		if(list.size() == 0)
+		if(list.isEmpty())
 			response.setMessage("No result found!");
 		else {
 			response.setList(list);
@@ -142,7 +153,7 @@ public class OrderService
 
 		OrderFindAllResponse response = new OrderFindAllResponse();
 
-		if(list.size() == 0)
+		if(list.isEmpty())
 			response.setMessage("No result found!");
 		else {
 			response.setList(list);
