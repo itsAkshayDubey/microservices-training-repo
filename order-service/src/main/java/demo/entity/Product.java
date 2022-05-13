@@ -44,14 +44,14 @@ public class Product {
 	public int getProductId() {
 		return productId;
 	}
-	public void setProductId(int product_id) {
-		this.productId = product_id;
+	public void setProductId(int productId) {
+		this.productId = productId;
 	}
 	public String getProductName() {
 		return productName;
 	}
-	public void setProductName(String product_name) {
-		this.productName = product_name;
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 	public String getRating() {
 		return rating;
