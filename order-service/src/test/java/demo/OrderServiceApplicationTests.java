@@ -10,7 +10,7 @@ class OrderServiceApplicationTests {
 	void applicationContextLoaded() {
 	}
 
-	@Test
+	//@Test
 	void applicationContextTest() {
 	    OrderServiceApplication.main(new String[] {});
 	}
