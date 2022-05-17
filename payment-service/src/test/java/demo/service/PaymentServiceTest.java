@@ -1,41 +1,40 @@
 package demo.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import demo.entity.Payment;
-import demo.repository.PaymentRepository;
+import demo.util.TransactionIdGenerator;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class PaymentServiceTest {
 	
 	@MockBean
-	PaymentRepository repo;
+	PaymentService ser;
 	
-	@Autowired
-	MockMvc mockMvc;
+	@MockBean
+	TransactionIdGenerator trans;
 
 	@Test
 	void testDoPayment() {
 		Payment payment = new Payment();
-		payment.setOrderId(1);
-		payment.setPaymentStatus("success");
+		payment.setOrderId(1);		
 		
-		when(repo.save(payment)).thenReturn(payment);
 		
-		assertEquals(payment.getOrderId(), repo.save(payment).getOrderId());
-		assertEquals("success", payment.getPaymentStatus());
+		Payment paymentResponse = new Payment();
+		paymentResponse.setPaymentStatus("success");
+		paymentResponse.setOrderId(1);
+		when(ser.doPayment(payment)).thenReturn(paymentResponse);
+		
+		assertEquals(payment.getOrderId(), ser.doPayment(payment).getOrderId());
+		assertEquals("success", ser.doPayment(payment).getPaymentStatus());
 		
 		
 	}
@@ -45,15 +44,24 @@ class PaymentServiceTest {
 
 		int id = 1;
 		
-		Optional<Payment> payment = Optional.ofNullable(new Payment());
-		if(payment.isPresent())
-			payment.get().setOrderId(id);
+		Payment payment = (new Payment());
+		payment.setOrderId(id);
 		
-		when(repo.findById(id)).thenReturn(payment);
-		if(payment.isPresent())
-		assertEquals(payment.get().getOrderId(), repo.findById(id).get().getOrderId());
+		when(ser.findPaymentHistoryByOrderId(id)).thenReturn(payment);
+		assertEquals(payment.getOrderId(), ser.findPaymentHistoryByOrderId(id).getOrderId());
 		
 		
+		
+	}
+	
+	@Test
+	void testGenerateTransactionId() {
+		
+		when(trans.generateTransactionId()).thenReturn("ABC123");
+		
+		String output = trans.generateTransactionId();
+		
+		assertEquals("ABC123", output);
 		
 	}
 
